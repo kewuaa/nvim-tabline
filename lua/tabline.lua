@@ -8,7 +8,9 @@ M.options = {
     show_index = true,
     show_modify = true,
     show_icon = false,
-    fnamemodify = ':t',
+    fnamemodify = function(bufname)
+        return fn.fnamemodify(bufname, ":t")
+    end,
     brackets = { '[', ']' },
     no_name = 'No Name',
     modify_indicator = ' [+]',
