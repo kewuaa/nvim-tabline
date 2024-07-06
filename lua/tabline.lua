@@ -41,8 +41,8 @@ local function tabline(options)
         -- icon
         local icon = ''
         if options.show_icon and M.has_devicons then
-            local ext = fn.fnamemodify(bufname, ':e')
-            icon = M.devicons.get_icon(bufname, ext, { default = true }) .. ' '
+            local ft = vim.bo[bufnr].filetype
+            icon = M.get_icon(ft) .. ' '
         end
         -- buf name
         s = s .. options.brackets[1]
@@ -84,7 +84,14 @@ end
 
 function M.setup(user_options)
     M.options = vim.tbl_extend('force', M.options, user_options)
-    M.has_devicons, M.devicons = pcall(require, 'nvim-web-devicons')
+    if _G.MiniIcons ~= nil then
+        M.has_devicons = true
+        M.get_icon = function(filetype) return (_G.MiniIcons.get('filetype', filetype)) end
+    else
+        local has_devicons, devicons = pcall(require, 'nvim-web-devicons')
+        M.has_devicons = has_devicons
+        M.get_icon = function() return (devicons.get_icon(vim.fn.expand('%:t'), nil, { default = true })) end
+    end
 
     function _G.nvim_tabline()
         return tabline(M.options)
